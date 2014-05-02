@@ -41,14 +41,11 @@ void OnBoardManager::setup()
 
 void OnBoardManager::check()
 {
-	RFPacket*	pReceivedPacket = m_Receiver.getPacket();
-
-	// Check for unhandled RF data first
+	RFPacket* pReceivedPacket = m_Receiver.getPacket();
 	if(pReceivedPacket != NULL)
 	{
+		m_Receiver.stop();
 		bool bDecodeSuccessful = false;
-//		if (pReceivedPacket->getSize() == 96)
-//				pReceivedPacket->print();			//debug
 
 		for(int i = 1; i <= NUM_DECODERS; i++)
 		{
@@ -86,28 +83,28 @@ void OnBoardManager::check()
 			if(m_Decoder->decode(pReceivedPacket))
 			{
 				bDecodeSuccessful = true;
-				
-				// Blink stat LED to show activity
-				leds.blinkStat();
+				leds.blinkStat(); // Blink stat LED to show activity
 
 				NinjaPacket packet;
-				
 				m_Decoder->fillPacket(&packet);
-				
 				packet.printToSerial();	
+				
 				delete m_Decoder;
 				break;
 			}
 			pReceivedPacket->rewind();
 			delete m_Decoder;
 		}
-		// Purge 
+		
 		m_Receiver.purge();
+		m_Receiver.start();
 	}
 
 	// Check if heartbeat expired
 	if(heartbeat.isExpired())
 	{
+		m_Receiver.stop();
+
 		NinjaPacket packet;
 
 		packet.setType(TYPE_DEVICE);
@@ -121,6 +118,8 @@ void OnBoardManager::check()
 		packet.setData(leds.getEyesColor());
 
 		packet.printToSerial();
+		
+		m_Receiver.start();
 	}
 }
 
@@ -138,7 +137,6 @@ void OnBoardManager::handle(NinjaPacket* pPacket)
 		m_Receiver.stop();
 		
 		char encoding = pPacket->getEncoding();
-		
 		switch (encoding)
 		{
 			case ENCODING_COMMON:
@@ -159,6 +157,10 @@ void OnBoardManager::handle(NinjaPacket* pPacket)
 			case ENCODING_BOUTD:
 				m_encoder = new bOutDProtocolEncoder(pPacket->getTiming());
 				break;								
+			default:
+				m_encoder = new CommonProtocolEncoder(pPacket->getTiming());
+				break;
+
 		}
 		
 		if(pPacket->isDataInArray())
@@ -166,14 +168,17 @@ void OnBoardManager::handle(NinjaPacket* pPacket)
 		else 
 			m_encoder->setCode(pPacket->getData());
 			
-		//m_encoder->setCode(pPacket->getData());
 		m_encoder->encode(&m_PacketTransmit);
 		
 		m_Transmitter.send(&m_PacketTransmit, 5);
 		delete m_encoder;
-		m_Receiver.start();
 	}
+
+	m_Receiver.stop(); //prevent double printing to serial.
 
 	pPacket->setType(TYPE_ACK);
 	pPacket->printToSerial();
+
+	m_Receiver.start();
+
 }
