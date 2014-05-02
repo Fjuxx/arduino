@@ -212,40 +212,40 @@ bool NinjaPacket::fromJson(char* strJson)
 
 void NinjaPacket::printToSerial()
 {
-	Serial.print("{\"");
+	Serial.print(F("{\""));
 	
 	switch(m_nType)
 	{
 		case TYPE_DEVICE:
-			Serial.print("DEVICE");
+			Serial.print(F("DEVICE"));
 			break;
 
 		case TYPE_PLUGIN:
-			Serial.print("PLUGIN");
+			Serial.print(F("PLUGIN"));
 			break;
 
 		case TYPE_UNPLUG:
-			Serial.print("UNPLUG");
+			Serial.print(F("UNPLUG"));
 			break;
 
 		case TYPE_ACK:
-			Serial.print("ACK");
+			Serial.print(F("ACK"));
 			break;
 
 		case TYPE_ERROR:
-			Serial.print("ERROR");
+			Serial.print(F("ERROR"));
 			break;
 	}
 
-	Serial.print("\":[{\"G\":\"");
+	Serial.print(F("\":[{\"G\":\""));
 	Serial.print(m_nGuid);
-	Serial.print("\",\"V\":0,\"D\":");
+	Serial.print(F("\",\"V\":0,\"D\":"));
 	Serial.print(m_nDevice);
-	Serial.print(",\"DA\":");
+	Serial.print(F(",\"DA\":"));
 
 	printData();
 
-	Serial.println("}]}");
+	Serial.println(F("}]}"));
 }
 
 void NinjaPacket::printData()
@@ -255,7 +255,7 @@ void NinjaPacket::printData()
 		if(m_nDevice == ID_ONBOARD_RF || m_nDevice == ID_STATUS_LED || m_nDevice == ID_NINJA_EYES)
 			printDataHex();
 		else if(m_nDevice == ID_VERSION_NUMBER)
-			Serial.print(VERSION);
+			Serial.print(F(VERSION));
 		else
 			Serial.print((unsigned long)m_nData);
 	}
@@ -265,7 +265,7 @@ void NinjaPacket::printData()
 
 void NinjaPacket::printDataHex()
 {
-	Serial.print("\"");
+	Serial.print(F("\""));
 
 	if(m_nDevice == ID_ONBOARD_RF)
 	{
@@ -282,7 +282,7 @@ void NinjaPacket::printDataHex()
 	else 
 		printHex(dataArray, arraySize);
 
-	Serial.print("\"");
+	Serial.print(F("\""));
 }
 
 void NinjaPacket::printHex(unsigned long long nDataToPrint, int nNumBytesRequired)

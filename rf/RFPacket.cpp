@@ -61,9 +61,9 @@ void RFPacket::set(int nIndex, int nValue)
 
 void RFPacket::print()
 {
-	Serial.print("Size: ");
+	Serial.print(F("Size: "));
 	Serial.println(m_nSize);
-	Serial.print("Next: ");
+	Serial.print(F("Next: "));
 	Serial.println(m_nPosition);
 
 	/*if(m_nSize != 50)
@@ -72,7 +72,7 @@ void RFPacket::print()
 	for(int i = 0; i < m_nSize; i++)
 	{
 		Serial.print(i);
-		Serial.print(": ");
+		Serial.print(F(": "));
 		Serial.println(m_Buffer[i]);
 	}
 }

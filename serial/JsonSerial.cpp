@@ -41,7 +41,7 @@ bool JsonSerial::read(NinjaPacket* pPacket)
 void JsonSerial::printHex(byte b)
 {
 	if(b < 0x10)
-		Serial.print("0");
+		Serial.print(F("0"));
 
 	Serial.print(b, HEX);
 }
