@@ -13,6 +13,9 @@
 #include "../decoder/arlecProtocolDecoder.h"
 #include "../encoder/arlecProtocolEncoder.h"
 
+#include "../decoder/KakuNewProtocolDecoder.h"
+#include "../encoder/KakuNewProtocolEncoder.h"
+
 #include "../decoder/HE330v2ProtocolDecoder.h"
 #include "../encoder/HE330v2ProtocolEncoder.h"
 
@@ -47,36 +50,40 @@ void OnBoardManager::check()
 		m_Receiver.stop();
 		bool bDecodeSuccessful = false;
 
-		for(int i = 1; i <= NUM_DECODERS; i++)
+		for(int i = 1; i <= 8; i++)
 		{
 			switch (i)
 			{
 				case 1:
-				m_Decoder = new CommonProtocolDecoder();
+				m_Decoder = new CommonProtocolDecoder(); // 50bits
 				break;
 				
 				case 2:
-				m_Decoder = new WT450ProtocolDecoder();
+				m_Decoder = new WT450ProtocolDecoder();  // >=64bits
 				break;
 
 				case 3:
-				m_Decoder = new arlecProtocolDecoder();
+				m_Decoder = new KakuNewProtocolDecoder();  // 132/148bits
 				break;
 
 				case 4:
-				m_Decoder = new HE330v2ProtocolDecoder();
+				m_Decoder = new arlecProtocolDecoder(); // 26bits
 				break;
 
 				case 5:
-				m_Decoder = new OSv2ProtocolDecoder();
+				m_Decoder = new HE330v2ProtocolDecoder(); //132 bits (TODO: test KakuNewProtocolDecoder does not conflict)
 				break;
 
 				case 6:
-				m_Decoder = new bInDProtocolDecoder();
+				m_Decoder = new OSv2ProtocolDecoder(); //>=136bits
+				break;
+
+				case 7:
+				m_Decoder = new bInDProtocolDecoder(); // 50bits
 				break;			
 			
-				case 7:
-				m_Decoder = new bOutDProtocolDecoder();
+				case 8:
+				m_Decoder = new bOutDProtocolDecoder(); //96bits
 				break;			
 			}
 			
@@ -141,6 +148,9 @@ void OnBoardManager::handle(NinjaPacket* pPacket)
 		{
 			case ENCODING_COMMON:
 				m_encoder = new CommonProtocolEncoder(pPacket->getTiming());
+				break;
+			case ENCODING_KAKUNEW:
+				m_encoder = new KakuNewProtocolEncoder(pPacket->getTiming());
 				break;
 			case ENCODING_ARLEC:
 				m_encoder = new arlecProtocolEncoder(pPacket->getTiming());

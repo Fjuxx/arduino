@@ -13,8 +13,6 @@
 #include "../rf/RFReceiver.h"
 #include "../rf/RFTransmitter.h"
 
-#define NUM_DECODERS	7
-
 class OnBoardManager
 {
 private:
