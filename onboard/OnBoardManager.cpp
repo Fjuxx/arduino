@@ -146,6 +146,7 @@ void OnBoardManager::handle(NinjaPacket* pPacket)
 		char encoding = pPacket->getEncoding();
 		switch (encoding)
 		{
+			case ENCODING_PIR:
 			case ENCODING_COMMON:
 				m_encoder = new CommonProtocolEncoder(pPacket->getTiming());
 				break;

@@ -53,8 +53,17 @@ boolean CommonProtocolDecoder::decode(RFPacket* pPacket)
 
 void CommonProtocolDecoder::fillPacket(NinjaPacket* pPacket)
 {
-	pPacket->setEncoding(ENCODING_COMMON);
-	pPacket->setTiming(m_nPulseLength);
+	if ((m_nPulseLength >= 320) && (m_nPulseLength <= 370))
+	{
+		pPacket->setEncoding(ENCODING_PIR);
+		pPacket->setTiming(350);	
+	}
+	else
+	{
+		pPacket->setEncoding(ENCODING_COMMON);
+		pPacket->setTiming(m_nPulseLength);
+	}
+	
 	pPacket->setType(TYPE_DEVICE);
 	pPacket->setGuid(0);
 	pPacket->setDevice(ID_ONBOARD_RF);
